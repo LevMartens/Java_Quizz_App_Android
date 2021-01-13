@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "339213424235",
+    "project_id": "melbournequiz-ea7e3",
+    "storage_bucket": "melbournequiz-ea7e3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339213424235:android:4837057d40844824ff832e",
+        "android_client_info": {
+          "package_name": "com.example.melbournequizzapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339213424235-me7ve5tma59gl82g9jlnl9gb839iqofu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDJ_dRvGQvF2m-JVcoqHBu2OZa2tWVH9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339213424235-me7ve5tma59gl82g9jlnl9gb839iqofu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
