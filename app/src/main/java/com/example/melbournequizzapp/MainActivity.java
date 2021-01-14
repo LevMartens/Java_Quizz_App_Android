@@ -19,7 +19,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity {
@@ -36,7 +38,8 @@ public class MainActivity extends Activity {
      int mScore;
      TextView mScoreTextView;
      ProgressBar mProgressbar;
-     DatabaseReference mDatabaseReference;
+     ArrayList<DataSnapshot> mSapshotList;
+     //DatabaseReference mDatabaseReference;
 
     // TODO: Uncomment to create question bank
     private TrueFalse[] mQuestionBank = new TrueFalse[] {
@@ -62,38 +65,27 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference ref = database.getReference("server/saving-data/fireblog/posts");
       mTrueButton = (Button) findViewById(R.id.true_button);
       mFalseButton = (Button) findViewById(R.id.false_button);
       mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
       mScoreTextView = (TextView) findViewById(R.id.score);
       mProgressbar = (ProgressBar) findViewById(R.id.progress_bar);
 
-       ChildEventListener mListener = new ChildEventListener() {
+
+       ref.addValueEventListener(new ValueEventListener() {
            @Override
-           public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-           }
-
-           @Override
-           public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-           }
-
-           @Override
-           public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-           }
-
-           @Override
-           public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+           public void onDataChange(@NonNull DataSnapshot snapshot) {
+               Post post = snapshot.getValue(Post.class);
+               System.out.println(post);
            }
 
            @Override
            public void onCancelled(@NonNull DatabaseError error) {
-
+               System.out.println("The read failed: " + error.getCode());
            }
-       };
+       });
 
 
 
@@ -162,4 +154,14 @@ public class MainActivity extends Activity {
             Toast.makeText(getApplicationContext(), R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
         }
     }
+}
+ class Post {
+
+    public String author;
+    public String title;
+
+    public Post(String author, String title) {
+        // ...
+    }
+
 }
