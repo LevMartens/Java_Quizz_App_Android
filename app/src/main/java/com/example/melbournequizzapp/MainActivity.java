@@ -1,31 +1,25 @@
 package com.example.melbournequizzapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +33,9 @@ public class MainActivity extends Activity {
 
      Button mTrueButton;
      Button mFalseButton;
+     Button mA;
+     Button mB;
+     Button mC;
      TextView mQuestionTextView;
      int mIndex;
      String mQuestion;
@@ -71,19 +68,23 @@ public class MainActivity extends Activity {
 
       mTrueButton = (Button) findViewById(R.id.true_button);
       mFalseButton = (Button) findViewById(R.id.false_button);
+      mA = (Button) findViewById(R.id.buttonA);
+
       mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
       mScoreTextView = (TextView) findViewById(R.id.score);
       mProgressbar = (ProgressBar) findViewById(R.id.progress_bar);
 
 
+        RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams)mQuestionTextView.getLayoutParams();
+        p.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        p.topMargin = 40; // in PX
+        mQuestionTextView.setLayoutParams(p);
+
+        mA.setVisibility(View.GONE);
+
+
+
         DocumentReference docRef = db.collection("questionBank").document("questions");
-
-
-
-
-
-
-
 
 
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -133,10 +134,6 @@ public class MainActivity extends Activity {
 
 
 
-
-
-
-
       mQuestionBank.add(new TrueFalse("firstQuestion",true));
       mQuestion = mQuestionBank.get(mIndex).getmQuestionID();
 
@@ -149,6 +146,12 @@ public class MainActivity extends Activity {
 
           @Override
           public void onClick(View view) {
+              mA.setVisibility(View.VISIBLE);
+              mA.setText("A: Dinosaurs are dicks");
+              RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams)mQuestionTextView.getLayoutParams();
+              p.addRule(RelativeLayout.CENTER_HORIZONTAL);
+              p.topMargin = 700; // in PX
+              mQuestionTextView.setLayoutParams(p);
               checkAnswer(true);
              updateQuestion();
           }
