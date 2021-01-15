@@ -3,21 +3,21 @@ package com.example.melbournequizzapp;
 public class TrueFalse {
 
 
-    private int mQuestionID;
+    private String mQuestionID;
     private boolean mAnswer;
 
-    public TrueFalse(int questionResourceID, boolean trueOrFalse) {
+    public TrueFalse(String questionResourceID, boolean trueOrFalse) {
 
         mQuestionID = questionResourceID;
         mAnswer = trueOrFalse;
 
     }
 
-    public int getmQuestionID() {
+    public String getmQuestionID() {
         return mQuestionID;
     }
 
-    public void setmQuestionID(int mQuestionID) {
+    public void setmQuestionID(String mQuestionID) {
         this.mQuestionID = mQuestionID;
     }
 

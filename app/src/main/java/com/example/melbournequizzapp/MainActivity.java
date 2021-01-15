@@ -8,20 +8,27 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class MainActivity extends Activity {
@@ -34,39 +41,49 @@ public class MainActivity extends Activity {
      Button mFalseButton;
      TextView mQuestionTextView;
      int mIndex;
-     int mQuestion;
+     String mQuestion;
      int mScore;
      TextView mScoreTextView;
      ProgressBar mProgressbar;
-     ArrayList<DataSnapshot> mSapshotList;
-     //DatabaseReference mDatabaseReference;
+     EmployeePojo fetched;
+     String test1;
+     boolean test2;
+    String test3;
+    boolean test4;
+    String test5;
+    boolean test6;
+    private  List<TrueFalse> mQuestionBank = new ArrayList<TrueFalse>();
+
+
 
     // TODO: Uncomment to create question bank
-    private TrueFalse[] mQuestionBank = new TrueFalse[] {
-            new TrueFalse(R.string.question_1, true),
-            new TrueFalse(R.string.question_2, true),
-            new TrueFalse(R.string.question_3, true),
-            new TrueFalse(R.string.question_4, true),
-            new TrueFalse(R.string.question_5, true),
-            new TrueFalse(R.string.question_6, false),
-            new TrueFalse(R.string.question_7, true),
-            new TrueFalse(R.string.question_8, false),
-            new TrueFalse(R.string.question_9, true),
-            new TrueFalse(R.string.question_10, true),
-            new TrueFalse(R.string.question_11, false),
-            new TrueFalse(R.string.question_12, false),
-            new TrueFalse(R.string.question_13,true)
-    };
+
+//    private TrueFalse[] mQuestionBank = new TrueFalse[] {
+//            new TrueFalse(R.string.question_1, true),
+//            new TrueFalse(R.string.question_2, true),
+//            new TrueFalse(R.string.question_3, true),
+//            new TrueFalse(R.string.question_4, true),
+//            new TrueFalse(R.string.question_5, true),
+//            new TrueFalse(R.string.question_6, false),
+//            new TrueFalse(R.string.question_7, true),
+//            new TrueFalse(R.string.question_8, false),
+//            new TrueFalse(R.string.question_9, true),
+//            new TrueFalse(R.string.question_10, true),
+//            new TrueFalse(R.string.question_11, false),
+//            new TrueFalse(R.string.question_12, false),
+//            new TrueFalse(R.string.question_13,true)
+//    };
 
     // TODO: Declare constants here
-    final int PROGRESS_BAR_INCREMENT = (int) Math.ceil(100.0 / mQuestionBank.length);
+    final int PROGRESS_BAR_INCREMENT = (int) Math.ceil(100.0 / mQuestionBank.size());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference("server/saving-data/fireblog/posts");
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
       mTrueButton = (Button) findViewById(R.id.true_button);
       mFalseButton = (Button) findViewById(R.id.false_button);
       mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -74,24 +91,77 @@ public class MainActivity extends Activity {
       mProgressbar = (ProgressBar) findViewById(R.id.progress_bar);
 
 
-       ref.addValueEventListener(new ValueEventListener() {
-           @Override
-           public void onDataChange(@NonNull DataSnapshot snapshot) {
-               Post post = snapshot.getValue(Post.class);
-               System.out.println(post);
-           }
-
-           @Override
-           public void onCancelled(@NonNull DatabaseError error) {
-               System.out.println("The read failed: " + error.getCode());
-           }
-       });
+        DocumentReference docRef = db.collection("questionBank").document("questions");
 
 
 
 
 
-      mQuestion = mQuestionBank[mIndex].getmQuestionID();
+
+        Log.d("Fetched", "OOoooooooooooooooooooooooooooooooooooooooooooooooooooooo1");
+
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                Log.d("Fetched", "OOoooooooooo0000oooooooooooooooooooooOOoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo2");
+                if (task.isSuccessful()) {
+                    Log.d("Fetched", "OOooooooooOOoooooooooooooooooooooooooooooooooooooooooooooooooooooooo3");
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d("o", "DocumentSnapshot data: " + document.getData());
+                        fetched = document.toObject(EmployeePojo.class);
+                        Log.d("Fetched", "fetched!"  +fetched.question1 +fetched.question2 +fetched.question3);
+
+
+                        //test1 = fetched.question;
+
+                        for (Map.Entry<String, Boolean> pair : fetched.question1.entrySet()) {
+                            test1 = pair.getKey();
+                              test2 = pair.getValue();
+
+                              mQuestionBank.add(1, new TrueFalse(test1,test2));
+
+
+                        }
+                        for (fetched.question1.size()) {
+                            fetched.question1.get(i);
+
+                        }
+//                        for (Map.Entry<String, Boolean> pair : fetched.question2.entrySet()) {
+//                            test3 = pair.getKey();
+//                            test4 = pair.getValue();
+//
+//                        }
+//                        for (Map.Entry<String, Boolean> pair : fetched.question3.entrySet()) {
+//                            test5 = pair.getKey();
+//                            test6 = pair.getValue();
+//
+//                        }
+
+//                        test2 = fetched.question.answer;
+
+                        Log.d("test", "foooooooo   " +test1+ "  "+test2);
+                        Log.d("test", "paaaaaaaa   " +test3+ "  "+test4);
+
+
+                    } else {
+                        Log.d("d", "No such document");
+                    }
+                } else {
+                    Log.d("r", "get failed with ", task.getException());
+                }
+            }
+        });
+
+
+
+
+
+
+
+      mQuestionBank.add(new TrueFalse("firstQuestion",true));
+      mQuestion = mQuestionBank.get(mIndex).getmQuestionID();
 
         mQuestionTextView.setText(mQuestion);
 
@@ -122,7 +192,7 @@ public class MainActivity extends Activity {
 
     }
     private void updateQuestion(){
-        mIndex = (mIndex +1 % mQuestionBank.length);
+        mIndex = (mIndex +1 % mQuestionBank.size());
 
         if(mIndex == 0){
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -138,14 +208,14 @@ public class MainActivity extends Activity {
             alert.show();
         }
 
-        mQuestion = mQuestionBank[mIndex].getmQuestionID();
+        mQuestion = mQuestionBank.get(mIndex).getmQuestionID();
         mQuestionTextView.setText(mQuestion);
         mProgressbar.incrementProgressBy(PROGRESS_BAR_INCREMENT);
-        mScoreTextView.setText("Score " + mScore + mQuestionBank.length);
+        mScoreTextView.setText("Score " + mScore + mQuestionBank.size());
     }
 
     private void checkAnswer(boolean userSelection) {
-        boolean correctAnswer = mQuestionBank[mIndex].ismAnswer();
+        boolean correctAnswer = mQuestionBank.get(mIndex).ismAnswer();
 
         if(userSelection == correctAnswer) {
             Toast.makeText(getApplicationContext(), R.string.correct_toast, Toast.LENGTH_SHORT).show();
@@ -155,13 +225,61 @@ public class MainActivity extends Activity {
         }
     }
 }
- class Post {
 
-    public String author;
-    public String title;
+class EmployeePojo {
 
-    public Post(String author, String title) {
-        // ...
+
+    public HashMap<String, Boolean> question1;
+    public HashMap<String, Boolean> question2;
+    public HashMap<String, Boolean> question3;
+
+    public EmployeePojo() {
+
     }
+
+    public EmployeePojo( HashMap<String, Boolean> question1, HashMap<String, Boolean> question2, HashMap<String, Boolean> question3) {
+
+        this.question1 = question1;
+        this.question2 = question2;
+        this.question3 = question3;
+    }
+
+
+}
+
+//class EmployeePojo {
+//
+////    public HashMap<String, Boolean> question1;
+////    public HashMap<String, Boolean> question2;
+////    public HashMap<String, Boolean> question3;
+//    public String hoi;
+//
+//    public EmployeePojo() {
+//
+//    }
+//
+//    public EmployeePojo( String hoi) {
+//
+//        this.hoi = hoi;
+//    }
+//
+//
+//}
+
+class QuestionPojo {
+
+    public String question;
+    public boolean answer;
+
+
+    public QuestionPojo() {
+
+    }
+
+    public QuestionPojo(String question, boolean answer) {
+        this.answer = answer;
+        this.question = question;
+    }
+
 
 }
