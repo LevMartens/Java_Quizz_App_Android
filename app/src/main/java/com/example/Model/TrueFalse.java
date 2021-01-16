@@ -1,24 +1,25 @@
-package com.example.melbournequizzapp;
+package com.example.Model;
 
 public class TrueFalse {
 
 
-    private String mQuestionID;
+
+    private String mQuestion;
     private boolean mAnswer;
 
-    public TrueFalse(String questionResourceID, boolean trueOrFalse) {
+    public TrueFalse(String questionString, boolean trueOrFalse) {
 
-        mQuestionID = questionResourceID;
+        mQuestion = questionString;
         mAnswer = trueOrFalse;
 
     }
 
-    public String getmQuestionID() {
-        return mQuestionID;
+    public String getQuestion() {
+        return mQuestion;
     }
 
     public void setmQuestionID(String mQuestionID) {
-        this.mQuestionID = mQuestionID;
+        this.mQuestion = mQuestionID;
     }
 
     public boolean ismAnswer() {

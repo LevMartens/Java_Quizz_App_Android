@@ -6,17 +6,17 @@ import java.util.List;
 
 
 
-public class POJOForQuestions {
+public class POJOForTrueFalseQuestions {
 
 
         public List<HashMap<String, Boolean>> questions;
 
 
-        public POJOForQuestions() {
+        public POJOForTrueFalseQuestions() {
 
         }
 
-        public POJOForQuestions( List<HashMap<String, Boolean>> questions) {
+        public POJOForTrueFalseQuestions(List<HashMap<String, Boolean>> questions) {
 
             this.questions = questions;
         }
