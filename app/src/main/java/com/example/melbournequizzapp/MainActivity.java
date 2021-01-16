@@ -13,8 +13,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.Controller.FireBase;
+import com.example.Controller.ResultHandler;
 import com.example.Model.MultipleChoice;
-import com.example.Controller.Observer;
 import com.example.Model.TrueFalse;
 
 import java.util.ArrayList;
@@ -38,12 +38,14 @@ public class MainActivity extends Activity {
      int PROGRESS_BAR_INCREMENT;
      int INDEX;
      int mScore;
-     private Observer observer;
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
 
         getQuestions();
@@ -56,10 +58,16 @@ public class MainActivity extends Activity {
 
     private void getQuestions() {
         FireBase firebase = new FireBase();
-        mTrueFalseQuestionBank = firebase.getTrueFalseQuestions();
+        mTrueFalseQuestionBank = firebase.getTrueFalseQuestions(new ResultHandler() {
+            @Override
+            public void onSuccess() {
+                mTrueFalseQuestionBank = firebase.mTrueFalseQuestionBank;
+                  mQuestion = mTrueFalseQuestionBank.get(INDEX).getQuestion();
+                  mQuestionTextView.setText(mQuestion);
+            }
+        });  //The result handler will switch the "loading..." text for the first question.
         mMultipleChoiceQuestionBank = firebase.getMultipleChoiceQuestions();
-//        mQuestion = mTrueFalseQuestionBank.get(INDEX).getQuestion();
-//        mQuestionTextView.setText(mQuestion);
+
 
     }
 
@@ -94,7 +102,8 @@ public class MainActivity extends Activity {
     }
 
     private void setupWidgets() {
-
+        //mQuestion = mTrueFalseQuestionBank.get(INDEX).getQuestion();
+        mQuestionTextView.setText("loading...");
 
         mTrueButton.setOnClickListener(new View.OnClickListener() {
 
@@ -198,13 +207,17 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void notifyMeAbout(Observer firestore){
-        observer = firestore;
-    }
+//    public void notifyMeAbout(Observer firestore){
+//        observer = firestore;
+//    }
+//
+//    public void updateUIOnFireStoreFetchCompletion() {
+//
+//
+//        Log.d("PPPPPPAAAAA", "Firebase done!");
+//    }
 
-    public void updateUIOnFireStoreFetchCompletion() {
-        Log.d("PPPPPPAAAAA", "Firebase done!");
-    }
+
 }
 
 

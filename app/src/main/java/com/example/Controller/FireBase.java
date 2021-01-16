@@ -1,8 +1,12 @@
 package com.example.Controller;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.loader.content.AsyncTaskLoader;
 
 
 import com.example.Model.MultipleChoice;
@@ -19,6 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class FireBase {
 
@@ -32,14 +39,16 @@ public class FireBase {
     String optionADescription;
     String optionBDescription;
     String optionCDescription;
-    Observer wFireStoreDataIsFetched = new Observer();
-    MainActivity mainActivity = new MainActivity();
+
+
 
 
     public List<TrueFalse> mTrueFalseQuestionBank = new ArrayList<TrueFalse>();
     public List<MultipleChoice> mMultipleChoiceQuestionBank = new ArrayList<MultipleChoice>();
 
-    public List<TrueFalse> getTrueFalseQuestions() {
+
+
+    public List<TrueFalse> getTrueFalseQuestions(ResultHandler handler) {
         DocumentReference docRef = db.collection("questionBankTrueFalse").document("questions");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -63,11 +72,9 @@ public class FireBase {
                             }
 
                         }
+                        handler.onSuccess();
 
-                        wFireStoreDataIsFetched.addListener(mainActivity);
-                        mainActivity.notifyMeAbout(wFireStoreDataIsFetched);
-                        wFireStoreDataIsFetched.notifyListeners();
-                        wFireStoreDataIsFetched.removeListener(mainActivity);
+
 
                     } else {
                         Log.d("d", "No such document");
@@ -119,5 +126,7 @@ public class FireBase {
         return  mMultipleChoiceQuestionBank;
 
     }
+
+
 }
 
