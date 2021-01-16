@@ -1,19 +1,15 @@
 package com.example.Controller;
 
-import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.loader.content.AsyncTaskLoader;
 
 
 import com.example.Model.MultipleChoice;
 import com.example.Model.POJOForMultipleChoiceQuestions;
 import com.example.Model.POJOForTrueFalseQuestions;
+import com.example.Model.ResultHandler;
 import com.example.Model.TrueFalse;
-import com.example.melbournequizzapp.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -23,9 +19,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class FireBase {
 
@@ -87,7 +80,7 @@ public class FireBase {
 
    return  mTrueFalseQuestionBank;
     }
-    public List<MultipleChoice> getMultipleChoiceQuestions() {
+    public List<MultipleChoice> getMultipleChoiceQuestions(ResultHandler handler) {
         DocumentReference docRef = db.collection("questionBankMultipleChoice").document("questions");
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -113,7 +106,7 @@ public class FireBase {
 
 
                         }
-
+                       handler.onSuccess();
                     } else {
                         Log.d("d", "No such document");
                     }

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.Controller.FireBase;
-import com.example.Controller.ResultHandler;
+import com.example.Model.ResultHandler;
 import com.example.Model.MultipleChoice;
 import com.example.Model.TrueFalse;
 
@@ -36,8 +36,14 @@ public class MainActivity extends Activity {
      List<TrueFalse> mTrueFalseQuestionBank;
      List<MultipleChoice> mMultipleChoiceQuestionBank;
      int PROGRESS_BAR_INCREMENT;
-     int INDEX;
+     int TRUE_FALSE_INDEX;
+     int MULTIPLE_CHOICE_INDEX;
+     int TOTAL_INDEX;
      int mScore;
+     int TOTAL_QUESTIONS;
+     boolean onTrueFalseQuestion;
+     boolean outOfTrueFalseQuestions;
+     boolean outOfMultipleChoiceQuestions;
 
 
 
@@ -58,15 +64,21 @@ public class MainActivity extends Activity {
 
     private void getQuestions() {
         FireBase firebase = new FireBase();
+        mMultipleChoiceQuestionBank = firebase.getMultipleChoiceQuestions(new ResultHandler() {
+            @Override
+            public void onSuccess() {
+                mMultipleChoiceQuestionBank = firebase.mMultipleChoiceQuestionBank;
+                displayScore();
+            }
+        });
         mTrueFalseQuestionBank = firebase.getTrueFalseQuestions(new ResultHandler() {
             @Override
             public void onSuccess() {
                 mTrueFalseQuestionBank = firebase.mTrueFalseQuestionBank;
-                  mQuestion = mTrueFalseQuestionBank.get(INDEX).getQuestion();
-                  mQuestionTextView.setText(mQuestion);
+                displayFirstQuestion();
             }
         });  //The result handler will switch the "loading..." text for the first question.
-        mMultipleChoiceQuestionBank = firebase.getMultipleChoiceQuestions();
+
 
 
     }
@@ -84,26 +96,33 @@ public class MainActivity extends Activity {
         PROGRESS_BAR_INCREMENT = (int) Math.ceil(100.0 / mTrueFalseQuestionBank.size());
         mTrueFalseQuestionBank = new ArrayList<TrueFalse>();
         mMultipleChoiceQuestionBank = new ArrayList<MultipleChoice>();
-        //mTrueFalseQuestionBank.add(new TrueFalse("firstQuestion",true));
-        //Add loading text when questionbank have data update textview
 
-        putWidgetsInStartingPosition();
-        setupWidgets();
+
+        putWidgetsInLoadingPosition();
+        setupWidgetsFunctions();
+
 
 
     }
 
-    private void putWidgetsInStartingPosition() {
+    private void putWidgetsInLoadingPosition() {
         RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams)mQuestionTextView.getLayoutParams();
         p.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        p.topMargin = 40; // in PX
+        p.topMargin = 350; // in PX
         mQuestionTextView.setLayoutParams(p);
         mAButton.setVisibility(View.GONE);
+        mBButton.setVisibility(View.GONE);
+        mCButton.setVisibility(View.GONE);
+        mQuestionTextView.setText("   loading...");
+        mQuestionTextView.setGravity(Gravity.CENTER);
+        mTrueButton.setVisibility(View.GONE);
+        mFalseButton.setVisibility(View.GONE);
+        mProgressbar.setVisibility(View.GONE);
+        mScoreTextView.setVisibility(View.INVISIBLE);
+
     }
 
-    private void setupWidgets() {
-        //mQuestion = mTrueFalseQuestionBank.get(INDEX).getQuestion();
-        mQuestionTextView.setText("loading...");
+    private void setupWidgetsFunctions() {
 
         mTrueButton.setOnClickListener(new View.OnClickListener() {
 
@@ -152,31 +171,45 @@ public class MainActivity extends Activity {
     }
 
     private void trueButtonTapped() {
-        mAButton.setVisibility(View.VISIBLE);
-        mAButton.setText("A: Dinosaurs are dicks");
-        RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams)mQuestionTextView.getLayoutParams();
-        p.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        p.topMargin = 700; // in PX
-        mQuestionTextView.setLayoutParams(p);
-        checkAnswer(true);
+        onTrueFalseQuestion = false;
+        checkTrueFalseAnswer(true);
         updateQuestion();
     }
 
     private void falseButtonTapped(){
-        checkAnswer(false);
+        onTrueFalseQuestion = false;
+        checkTrueFalseAnswer(false);
         updateQuestion();
     }
 
-    private  void answerAButtonTapped() {}
+    private void answerAButtonTapped() {}
 
-    private  void answerBButtonTapped() {}
+    private void answerBButtonTapped() {}
 
-    private  void answerCButtonTapped() {}
+    private void answerCButtonTapped() {}
+
+    private void displayFirstQuestion() {
+        mQuestion = mTrueFalseQuestionBank.get(TRUE_FALSE_INDEX).getQuestion();
+        mQuestionTextView.setText(mQuestion);
+        mTrueButton.setVisibility(View.VISIBLE);
+        mFalseButton.setVisibility(View.VISIBLE);
+        mProgressbar.setVisibility(View.VISIBLE);
+        onTrueFalseQuestion = true;
+        outOfTrueFalseQuestions = false;
+        outOfMultipleChoiceQuestions = false;
+
+
+    }
+
+    private void displayScore() {
+        mScoreTextView.setVisibility(View.VISIBLE);
+        TOTAL_QUESTIONS = mTrueFalseQuestionBank.size() + mMultipleChoiceQuestionBank.size();
+        mScoreTextView.setText("Score " + mScore +"/"+ TOTAL_QUESTIONS);
+    }
 
     private void updateQuestion(){
-        INDEX = ( INDEX +1 % mTrueFalseQuestionBank.size());
 
-        if(INDEX == 0){
+        if(outOfMultipleChoiceQuestions && outOfTrueFalseQuestions == true) {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle("Game Over");
             alert.setCancelable(false);
@@ -187,17 +220,65 @@ public class MainActivity extends Activity {
                     finish();
                 }
             });
-            alert.show();
+            alert.show();} else {
+
+
+            if (onTrueFalseQuestion == true) {
+                TRUE_FALSE_INDEX = ( TRUE_FALSE_INDEX +1 % mTrueFalseQuestionBank.size());
+                if(TRUE_FALSE_INDEX == 0){
+                    outOfTrueFalseQuestions = true;
+                    onTrueFalseQuestion = false;
+                    updateQuestion();
+                }
+
+                displayNextTrueFalseQuestion();
+            }
+
+
+            if (onTrueFalseQuestion == false) {
+                MULTIPLE_CHOICE_INDEX = ( MULTIPLE_CHOICE_INDEX +1 % mMultipleChoiceQuestionBank.size());
+                if(MULTIPLE_CHOICE_INDEX == 0){
+                    outOfMultipleChoiceQuestions = true;
+                    onTrueFalseQuestion = true;
+                    updateQuestion();
+                    //displayNextTrueFalseQuestion();
+                }
+                displayNextMultipleChoiceQuestion();
+            }
+
+
         }
 
-        mQuestion = mTrueFalseQuestionBank.get(INDEX).getQuestion();
-        mQuestionTextView.setText(mQuestion);
-        mProgressbar.incrementProgressBy(PROGRESS_BAR_INCREMENT);
-        mScoreTextView.setText("Score " + mScore + mTrueFalseQuestionBank.size());
+
+
     }
 
-    private void checkAnswer(boolean userSelection) {
-        boolean correctAnswer = mTrueFalseQuestionBank.get(INDEX).ismAnswer();
+    private void displayNextTrueFalseQuestion() {
+        mAButton.setVisibility(View.GONE);
+        mBButton.setVisibility(View.GONE);
+        mCButton.setVisibility(View.GONE);
+        mTrueButton.setVisibility(View.VISIBLE);
+        mFalseButton.setVisibility(View.VISIBLE);
+        mQuestion = mTrueFalseQuestionBank.get(TRUE_FALSE_INDEX).getQuestion();
+        mQuestionTextView.setText(mQuestion);
+        mProgressbar.incrementProgressBy(PROGRESS_BAR_INCREMENT);
+        mScoreTextView.setText("Score " + mScore +"/"+ TOTAL_QUESTIONS);
+    }
+
+    private void displayNextMultipleChoiceQuestion() {
+        mTrueButton.setVisibility(View.GONE);
+        mFalseButton.setVisibility(View.GONE);
+        mAButton.setVisibility(View.VISIBLE);
+        mBButton.setVisibility(View.VISIBLE);
+        mCButton.setVisibility(View.VISIBLE);
+        mQuestion = mMultipleChoiceQuestionBank.get(MULTIPLE_CHOICE_INDEX).getQuestion();
+        mQuestionTextView.setText(mQuestion);
+        mProgressbar.incrementProgressBy(PROGRESS_BAR_INCREMENT);
+        mScoreTextView.setText("Score " + mScore +"/"+ TOTAL_QUESTIONS);
+    }
+
+    private void checkTrueFalseAnswer(boolean userSelection) {
+        boolean correctAnswer = mTrueFalseQuestionBank.get(TRUE_FALSE_INDEX).ismAnswer();
 
         if(userSelection == correctAnswer) {
             Toast.makeText(getApplicationContext(), R.string.correct_toast, Toast.LENGTH_SHORT).show();
@@ -207,15 +288,9 @@ public class MainActivity extends Activity {
         }
     }
 
-//    public void notifyMeAbout(Observer firestore){
-//        observer = firestore;
-//    }
-//
-//    public void updateUIOnFireStoreFetchCompletion() {
-//
-//
-//        Log.d("PPPPPPAAAAA", "Firebase done!");
-//    }
+    private void checkMultipleChoiceAnswer(String answer) {
+
+    }
 
 
 }

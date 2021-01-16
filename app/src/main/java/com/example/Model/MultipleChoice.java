@@ -19,4 +19,5 @@ public MultipleChoice(String mQuestion, String mAnswer, String mOptionADescripti
     public String getQuestion() {
         return mQuestion;
     }
+    public String isAnswer() {return mAnswer;}
 }
