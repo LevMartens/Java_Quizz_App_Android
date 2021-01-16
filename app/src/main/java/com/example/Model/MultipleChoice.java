@@ -20,4 +20,7 @@ public MultipleChoice(String mQuestion, String mAnswer, String mOptionADescripti
         return mQuestion;
     }
     public String isAnswer() {return mAnswer;}
+    public String getOptionADescription() {return mOptionADescription;}
+    public String getOptionBDescription() {return mOptionBDescription;}
+    public String getOptionCDescription() {return mOptionCDescription;}
 }
