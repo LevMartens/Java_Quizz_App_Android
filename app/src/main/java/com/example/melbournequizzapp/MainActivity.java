@@ -3,14 +3,21 @@ package com.example.melbournequizzapp;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import com.example.Controller.FireBase;
 import com.example.Model.ResultHandler;
@@ -20,7 +27,7 @@ import com.example.Model.TrueFalse;
 import java.util.ArrayList;
 import java.util.List;
 
-
+//Todo: See mc question get rid of modulo and use if (INDEX == SIZE), still got to implement for TF, maybe you need equal tf and mc
 public class MainActivity extends Activity {
 
 
@@ -38,7 +45,6 @@ public class MainActivity extends Activity {
      int PROGRESS_BAR_INCREMENT;
      int TRUE_FALSE_INDEX;
      int MULTIPLE_CHOICE_INDEX;
-     int TOTAL_INDEX;
      int mScore;
      int TOTAL_QUESTIONS;
      boolean onTrueFalseQuestion;
@@ -51,6 +57,7 @@ public class MainActivity extends Activity {
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +82,7 @@ public class MainActivity extends Activity {
                 if(mMultipleChoiceQuestionBankReady == true) {
 
 
+
                 displayScore();
                 }
             }
@@ -95,6 +103,7 @@ public class MainActivity extends Activity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setupView() {
         setContentView(R.layout.activity_main);
         mTrueButton = (Button) findViewById(R.id.true_button);
@@ -108,6 +117,8 @@ public class MainActivity extends Activity {
         TOTAL_QUESTIONS = mTrueFalseQuestionBank.size() + mMultipleChoiceQuestionBank.size();
         mTrueFalseQuestionBank = new ArrayList<TrueFalse>();
         mMultipleChoiceQuestionBank = new ArrayList<MultipleChoice>();
+
+
 
 
         putWidgetsInLoadingPosition();
@@ -195,12 +206,14 @@ public class MainActivity extends Activity {
     }
 
     private void answerAButtonTapped() {
+        //Todo:MULTIPLE_CHOICE_INDEX = MULTIPLE_CHOICE_INDEX +1;
         onTrueFalseQuestion = true;
         checkMultipleChoiceAnswer("A");
         updateQuestion();
     }
 
     private void answerBButtonTapped() {
+        //Todo:MULTIPLE_CHOICE_INDEX = MULTIPLE_CHOICE_INDEX +1;
         onTrueFalseQuestion = true;
         checkMultipleChoiceAnswer("B");
         updateQuestion();
@@ -208,6 +221,7 @@ public class MainActivity extends Activity {
     }
 
     private void answerCButtonTapped() {
+        //Todo:MULTIPLE_CHOICE_INDEX = MULTIPLE_CHOICE_INDEX +1;
         onTrueFalseQuestion = true;
         checkMultipleChoiceAnswer("C");
         updateQuestion();
@@ -216,7 +230,6 @@ public class MainActivity extends Activity {
     private void displayFirstQuestion() {
         onFirstQuestion = true;
         mQuestion = mTrueFalseQuestionBank.get(TRUE_FALSE_INDEX).getQuestion();
-        System.out.println("TRUE_FALSE_INDEX  "+TRUE_FALSE_INDEX);
         mQuestionTextView.setText(mQuestion);
         mTrueButton.setVisibility(View.VISIBLE);
         mFalseButton.setVisibility(View.VISIBLE);
@@ -237,18 +250,30 @@ public class MainActivity extends Activity {
 
     private void updateQuestion(){
 
+
         if(outOfMultipleChoiceQuestions == true && outOfTrueFalseQuestions == true) {
-            AlertDialog.Builder alert = new AlertDialog.Builder(this);
-            alert.setTitle(mScore == TOTAL_QUESTIONS ? "Perfect Score!" : mScore > (TOTAL_QUESTIONS/2) ? "Not Bad" : "Game Over");
-            alert.setCancelable(false);
-            alert.setMessage("You scored " + mScore + " points out of "+TOTAL_QUESTIONS+ " questions.");
-            alert.setPositiveButton("Close Application", new DialogInterface.OnClickListener() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog alert = builder.create();
+            builder.setTitle(mScore == TOTAL_QUESTIONS ? "Perfect Score!" : mScore > (TOTAL_QUESTIONS/2) ? "Not Bad" : "Game Over");
+            builder.setCancelable(false);
+            builder.setMessage("You scored " + mScore + " points out of "+TOTAL_QUESTIONS+ " questions.");
+
+            builder.setNegativeButton("Start Over ", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    startOver();
+                    alert.cancel();
+
+                }
+            });
+
+            builder.setPositiveButton("Close Application", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     finish();
                 }
             });
-            alert.show();} else {
+            builder.show();} else {
 
 
             if (onTrueFalseQuestion == true) {
@@ -268,9 +293,13 @@ public class MainActivity extends Activity {
 
 
             if (onTrueFalseQuestion == false) {
+                System.out.println("The total pay is " +MULTIPLE_CHOICE_INDEX);
                 MULTIPLE_CHOICE_INDEX = ( MULTIPLE_CHOICE_INDEX +1 % mMultipleChoiceQuestionBank.size());
+                System.out.println("The total pay is BEFORE " +MULTIPLE_CHOICE_INDEX);
                 if (MULTIPLE_CHOICE_INDEX == mMultipleChoiceQuestionBank.size()) {MULTIPLE_CHOICE_INDEX = 0;}
+                System.out.println("The total pay is AFTER" +MULTIPLE_CHOICE_INDEX);
                 if(onFirstQuestion == true) {MULTIPLE_CHOICE_INDEX = 0;}
+                System.out.println("The total pay is AFTER" +MULTIPLE_CHOICE_INDEX);
                 if(MULTIPLE_CHOICE_INDEX == 0){
 
                     if(onFirstQuestion == false){
@@ -348,6 +377,19 @@ public class MainActivity extends Activity {
         TOTAL_QUESTIONS = mTrueFalseQuestionBank.size() + mMultipleChoiceQuestionBank.size();
         mScoreTextView.setText("Score " + mScore +"/"+ TOTAL_QUESTIONS);
 
+    }
+
+    private void startOver() {
+
+        mAButton.setVisibility(View.GONE);
+        mBButton.setVisibility(View.GONE);
+        mCButton.setVisibility(View.GONE);
+        MULTIPLE_CHOICE_INDEX = 0;
+        TRUE_FALSE_INDEX = 0;
+        mScore = 0;
+        mScoreTextView.setText("Score " + mScore +"/"+ TOTAL_QUESTIONS);
+        mProgressbar.setProgress(0);
+        displayFirstQuestion();
     }
 
 
