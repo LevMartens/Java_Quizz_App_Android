@@ -10,6 +10,14 @@
     <color name="color_false_button">#FF018786</color>
     <color name="purple_200">#FF19456b</color>
     <color name="background">#FF19456b</color>
+    <color name="newBackground">#FF456268</color>
+    <color name="newColorDark">#FFd0e8f2</color>
+    <color name="newColorLightDark">#FFfcf8ec</color>
+    <color name="newColorLight">#FF79a3b1</color>
+
+
+
+
 
 
 </resources>

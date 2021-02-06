@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerHorizontal="true"
-    android:background="@color/background"
+    android:background="@color/newBackground"
     android:orientation="vertical" >
 
     <ProgressBar
@@ -13,8 +13,13 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:id="@+id/progress_bar"
+        android:progressBackgroundTint="@color/newColorLight"
+        android:progressTint="@color/newColorDark"
+        android:theme="@style/progressBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:indeterminate="false" />
+
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -36,6 +41,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="408dp"
         android:gravity="center_horizontal"
+        android:textFontWeight="400"
         android:padding="20dp"
         android:layout_centerInParent="true"
         android:text="@string/question_1"
@@ -60,10 +66,13 @@
                 android:layout_marginTop="400dp"
                 android:textAlignment="textStart"
                 android:text="Button A"
+                android:textAllCaps="false"
                 android:paddingTop="10dp"
+                android:textFontWeight="400"
+                android:layout_marginBottom="5dp"
                 android:paddingLeft="12dp"
-                android:background="@color/color_false_button"
-                android:textColor="@color/white"
+                android:background="@drawable/button_shape"
+                android:textColor="@color/newBackground"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:gravity="start"
@@ -76,10 +85,13 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="textStart"
                 android:text="Button B"
+                android:textAllCaps="false"
                 android:paddingTop="10dp"
+                android:textFontWeight="400"
+                android:layout_marginBottom="5dp"
                 android:paddingLeft="12dp"
-                android:background="@color/color_false_button"
-                android:textColor="@color/white"
+                android:background="@drawable/button_shape"
+                android:textColor="@color/newBackground"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:gravity="start" />
@@ -91,10 +103,13 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="textStart"
                 android:text="Button C"
+                android:textFontWeight="400"
+                android:layout_marginBottom="5dp"
+                android:textAllCaps="false"
                 android:paddingTop="10dp"
                 android:paddingLeft="12dp"
-                android:background="@color/color_false_button"
-                android:textColor="@color/white"
+                android:background="@drawable/button_shape"
+                android:textColor="@color/newBackground"
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:gravity="start"/>
@@ -123,8 +138,10 @@
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:id="@+id/true_button"
             android:text="@string/true_button"
-            android:background="@color/color_false_button"
-            android:textColor="@color/white"
+            android:textFontWeight="600"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/button_shape"
+            android:textColor="@color/newBackground"
             android:textStyle="bold"
             android:textSize="20sp"/>
 
@@ -133,9 +150,11 @@
             android:layout_height="wrap_content"
             style="@style/Base.Widget.AppCompat.Button.Borderless"
             android:id="@+id/false_button"
+            android:textFontWeight="600"
             android:text="@string/false_button"
-            android:background="@color/color_false_button"
-            android:textColor="@color/white"
+            android:layout_marginLeft="3dp"
+            android:background="@drawable/button_shape"
+            android:textColor="@color/newBackground"
             android:textStyle="bold"
             android:textSize="20sp"/>
 
